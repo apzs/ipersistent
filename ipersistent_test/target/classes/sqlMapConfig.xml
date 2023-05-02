@@ -1,0 +1,16 @@
+<configuration>
+
+    <!-- 1.配置数据源信息 -->
+    <dataSource>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/zdy_mybatis?useSSL=false&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC"></property>
+        <property name="username" value='root'></property>
+        <property name="password" value="root"></property>
+    </dataSource>
+
+    <!-- 2.引入映射配置文件 -->
+    <mappers>
+        <mapper resource="mapper/UserMapper.xml"></mapper>
+    </mappers>
+
+</configuration>
