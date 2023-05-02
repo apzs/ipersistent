@@ -9,6 +9,7 @@ import org.dom4j.DocumentException;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class IPersistentTest {
 
@@ -31,8 +32,11 @@ public class IPersistentTest {
         user.setId(1);
         user.setUsername("tom");
         User resultUser = sqlSession.selectOne("user.selectOne", user);
-
         System.out.println(resultUser);
+
+        System.out.println("----------------------");
+        List<User> list = sqlSession.selectList("user.selectList", null);
+        System.out.println(list);
 
         // 释放资源
         sqlSession.close();

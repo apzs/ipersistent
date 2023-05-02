@@ -2,7 +2,7 @@
 
     <!-- 唯一标识：namespace.id statementId -->
     <!-- 查询所有 -->
-    <select id="selectList" resultType="io.github.apzs.pojo.User">
+    <select id="selectList" parameterType="io.github.apzs.pojo.User" resultType="io.github.apzs.pojo.User">
         select * from user
     </select>
 

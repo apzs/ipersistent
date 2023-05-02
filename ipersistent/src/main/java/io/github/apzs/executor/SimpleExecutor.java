@@ -37,22 +37,24 @@ public class SimpleExecutor implements Executor {
         preparedStatement = connection.prepareStatement(finallySql);
         // 设置参数；这里是 io.github.apzs.pojo.User
         String parameterType = mappedStatement.getParameterType();
-        Class<?> parameterTypeClass = Class.forName(parameterType);
-        List<ParameterMapping> parameterMappingList = boundSql.getParameterMappingList();
-        // 遍历parameterMappingList
-        for (int i = 0; i < parameterMappingList.size(); i++) {
-            ParameterMapping parameterMapping = parameterMappingList.get(i);
-            // 获取内容（如果是上面的例子，则content 就是 id 或 username）
-            String paramName = parameterMapping.getContent();
-            // 通过反射，第一次遍历获取到User参数对象的`#{id}`里面的id字段
-            // 通过反射，第二次遍历获取到User参数对象的`#{username}`里面的username字段
-            Field declaredField = parameterTypeClass.getDeclaredField(paramName);
-            // 如果是私有的字段，则暴力访问
-            declaredField.setAccessible(true);
-            // 获取param对象的这个字段的值
-            Object value = declaredField.get(param);
-            // setObject的parameterIndex是从1开始的
-            preparedStatement.setObject(i+1,value);
+        if (parameterType != null) {
+            Class<?> parameterTypeClass = Class.forName(parameterType);
+            List<ParameterMapping> parameterMappingList = boundSql.getParameterMappingList();
+            // 遍历parameterMappingList
+            for (int i = 0; i < parameterMappingList.size(); i++) {
+                ParameterMapping parameterMapping = parameterMappingList.get(i);
+                // 获取内容（如果是上面的例子，则content 就是 id 或 username）
+                String paramName = parameterMapping.getContent();
+                // 通过反射，第一次遍历获取到User参数对象的`#{id}`里面的id字段
+                // 通过反射，第二次遍历获取到User参数对象的`#{username}`里面的username字段
+                Field declaredField = parameterTypeClass.getDeclaredField(paramName);
+                // 如果是私有的字段，则暴力访问
+                declaredField.setAccessible(true);
+                // 获取param对象的这个字段的值
+                Object value = declaredField.get(param);
+                // setObject的parameterIndex是从1开始的
+                preparedStatement.setObject(i + 1, value);
+            }
         }
         // 执行sql，发起查询
         resultSet = preparedStatement.executeQuery();
@@ -77,7 +79,7 @@ public class SimpleExecutor implements Executor {
                 // 得到columnName字段的写方法
                 Method writeMethod = propertyDescriptor.getWriteMethod();
                 // 参数1：实例对象，参数2：要设置的值
-                writeMethod.invoke(resultObject,columnValue);
+                writeMethod.invoke(resultObject, columnValue);
             }
             resultObjectList.add((E) resultObject);
         }
@@ -88,13 +90,13 @@ public class SimpleExecutor implements Executor {
         // 创建标记处理器：配合标记解析器完成标记的处理解析工作
         ParameterMappingTokenHandler parameterMappingTokenHandler = new ParameterMappingTokenHandler();
         // 创建标记解析器
-        GenericTokenParser genericTokenParser = new GenericTokenParser("#{","}",parameterMappingTokenHandler);
+        GenericTokenParser genericTokenParser = new GenericTokenParser("#{", "}", parameterMappingTokenHandler);
         // 将#{}替换为?；解析过程中将#{}里面的值保存到ParameterMapping里
         String finallySql = genericTokenParser.parse(sql);
         // 获取#{}里面的值的集合
         List<ParameterMapping> parameterMappings = parameterMappingTokenHandler.getParameterMappings();
 
-        BoundSql boundSql = new BoundSql(finallySql,parameterMappings);
+        BoundSql boundSql = new BoundSql(finallySql, parameterMappings);
         return boundSql;
     }
 
